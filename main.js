@@ -1,38 +1,48 @@
-function setup() {
-  canvas = createCanvas(300, 300);
-  canvas.center();
-  video = createCapture(VIDEO);
-  video.hide();
-  classifier = ml5.imageClassifier('MobileNet', modelLoaded);
+x=0;
+y=0;
+
+draw_apple="";
+
+
+
+var SpeechRecognition=window.webkitSpeechRecognition;
+var recognition=new SpeechRecognition();
+
+function start(){
+    document.getElementById("status").innerHTML="system is listening please speak";
+    recognition.start();
 }
 
-function draw() {
-  image(video, 0, 0, 300, 300);
-  classifier.classify(video, gotResult);
-}
+recognition.onresult=function(event){
+    console.log(event);
 
-function modelLoaded() {
-  console.log('modelLoaeded');
-}
+    var content=event.results[0][0].transcript;
+    document.getElementById("status").innerHTML="the speech has been recognized as : "+ content;
 
-var previous_result = '';
+   
 
-function gotResult(error, results) {
-  if (error) {
-    console.error(error);
-  }
-  else {
-    if ((results[0].confidence > 0.5) && (previous_result != results[0].label)) {
-console.log(results);
-previous_result=results[0].label;
-var synth=window.speechSynthesis;
-speak_data='obect detected is -'+results[0].label;
-var utterThis=new SpeechSynthesisUtterance(speak_data);
-synth.speak(utterThis);
+    if (content=="apple"){
+        x=Math.floor(Math.random() * 900);
+        y=Math.floor(Math.random() * 600);
 
-document.getElementById("result_object_name").innerHTML=results[0].label;
-document.getElementById('result_object_accuracy').innerHTML=results[0].confidence.toFixed(3);  
+        document.getElementById("status").innerHTML="started drawing apple";
 
+        draw_apple="set";
     }
-  }
+}
+
+function setup(){
+    canvas=createCanvas(900,600);
+}
+
+function draw(){
+   if (draw_apple=="set"){
+        radius=Math.floor(Math.random() * 100);
+        apple(x,y,100);
+        document.getElementById("status").innerHTML="apple is drawn";
+
+        draw_apple="";
+    } 
+
+   
 }
